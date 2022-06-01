@@ -2,10 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:learningdart/views/login_view.dart';
+import 'package:learningdart/views/notes_View.dart';
 import 'package:learningdart/views/register_view.dart';
 import 'package:learningdart/views/verifyEmail_view.dart';
+import 'dart:developer' as devtools show log ;
 
 import 'firebase_options.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +44,18 @@ class _HomePageState extends State<HomePage> {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                print('User Verified');
-                return LoginView();
-              } else {
-                print('Please verify your email');
-                return VerifyEmailView();
+              if(user != null){
+                if (user.emailVerified) {
+                  devtools.log('User Verified');
+                  return const NotesView();
+                } else {
+                  devtools.log('Please verify your email');
+                  return const VerifyEmailView();
+                }
+              }else{
+                return const LoginView();
               }
+              
             default:
               return const Center(
                 child: CircularProgressIndicator(),
