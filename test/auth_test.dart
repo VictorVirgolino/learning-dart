@@ -42,6 +42,13 @@ void  main() {
       expect(user, isNotNull);
       expect(user!.isEmailVerified, true);
     });
+
+    test('should be able to log out and log in again', () async {
+      await provider.logOut();
+      await provider.logIn(email: 'victorvirgolino@gmail.com', password: 'vaporubi');
+      final user = provider.currentUser;
+      expect(user, isNotNull);
+    });
   });
 }
 
