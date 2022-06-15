@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:learningdart/services/auth/auth_exceptions.dart';
 import 'package:learningdart/services/auth/auth_provider.dart';
 import 'package:learningdart/services/auth/auth_user.dart';
+import 'package:learningdart/services/crud/notes_service.dart';
 import 'package:test/test.dart';
 
 
@@ -102,5 +103,7 @@ class MockAuthProvider implements AuthProvider{
     const newUser = AuthUser(isEmailVerified: true, email: 'teste@gmail.com');
     _user = newUser;
   }
+
+
 
 }

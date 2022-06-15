@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, MissingPlatformDirectoryException;
 import 'package:path/path.dart' show join;
-
+import 'dart:developer' as devtools show log ;
 import 'crud_exceptions.dart';
 
 @immutable
@@ -202,19 +202,20 @@ class NotesService {
         title: title,
         text: text,
         isSyncedWithCloud: true);
-
     _notes.add(note);
     _notesStreamController.add(_notes);
     return note;
+
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
-    await _ensureDblsOpen();
+    devtools.log('getuser');
     final db = _getDatabaseOrThrow();
+
 
     final results = await db.query(userTable,
         limit: 1, where: 'email = ?', whereArgs: [email.toLowerCase()]);
-
+    devtools.log('get');
     if (results.isEmpty) {
       throw CouldNotFindUserException();
     } else {
@@ -264,9 +265,7 @@ class NotesService {
         final dbPath = join(docsPath.path, dbName);
         final db = await openDatabase(dbPath);
         _db = db;
-
         await db.execute(createUserTable);
-
         await db.execute(createNotestable);
         await _cacheNotes();
       } on MissingPlatformDirectoryException {
@@ -277,7 +276,11 @@ class NotesService {
 
   Future<void> _ensureDblsOpen() async{
     try {
-      await open();
+      await open().then((value) async{
+        final db = _getDatabaseOrThrow();
+        final user = await getUser(email: 'victorvirgolino@gmail.com');
+        devtools.log(user.toString());
+      });
     } on DatabaseAlreadyOpenException {
       
     }
@@ -310,7 +313,7 @@ const createUserTable = '''
           PRIMARY KEY("id" AUTOINCREMENT)
         );''';
 const createNotestable = '''
-        CREATE TABLE "note" (
+        CREATE TABLE IF NOT EXISTS "note" (
           "id"	INTEGER NOT NULL,
           "user_id"	INTEGER NOT NULL,
           "text"	TEXT NOT NULL,
